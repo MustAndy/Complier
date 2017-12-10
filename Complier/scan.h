@@ -1,0 +1,85 @@
+/****************************************************/
+/* File: scan.h                                     */
+/* The scanner interface for the C-Minus compiler   */
+/* Compiler Construction: Principles and Practice   */
+/* Programming by Zhiyao Liang                      */
+/* MUST FIT 2017 Fall                               */
+/****************************************************/
+
+#ifndef _SCAN_H_
+#define _SCAN_H_
+
+/* MAXRESERVED = the number of reserved words/ keywords */
+#include"util.h"
+#define MAX_RESERVED 8
+
+/* MAXTOKENLEN is the maximum size of a token */
+#define MAX_TOKEN_LEN 40
+
+extern Boolean S_debugScanner;
+extern Boolean S_scannerErrorFound;
+
+/* tokenString array stores the lexeme of each token */
+//extern char tokenString[MAX_TOKEN_LEN+1];
+
+/* the line number of the current token */
+//extern int lineNum; /* source line number for listing */
+
+typedef enum
+{
+	NONE, ERROR,/* book-keeping tokens, they are used to label non-final states in the DFA graph.*/
+				/* reserved words
+				if else int return void while
+				*/
+	IF, ELSE, INT, RETURN, VOID, WHILE, DO, FOR,
+	/* multicharacter tokens */
+	ID, NUMBER, COMMENT,  /* comment token may can be discarded by scanner */
+						  /* special symbols for
+						  +  -  *  /  <  <=  >  >=  ==  !=  =  ;  ,  (  )  [  ]  {  }
+						  */
+	PLUS, MINUS, MULTP, OVER, LT, LTE, GT, GTE, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAR, RPAR, LBR, RBR, LCUR, RCUR,
+	/* book-keeping token, representing the EOS (end of stream) signal received at the end of the streamer */
+	END
+} TokenType;
+
+//extern const char * S_toknTypeNames[];
+
+
+// A node in a double linked list
+typedef struct TkNd {
+	char *Token;
+	TokenType type;
+	int lineNum;
+	char state[10];
+	struct TkNd * next;
+}TOKENNODE,*PTOKENNODE;
+
+/* given a token type, return a string. For example, when parameter is INT, a string constant "INT" is returned */
+const char * token_type_to_string(TokenType);
+
+/* function getToken returns the
+* next token in source file
+*/
+PTOKENNODE* get_token(void);
+
+/* Procedure print_token prints a token
+* and its lexeme to the listing file
+*/
+//void printToken( TokenType, const char* );
+
+void print_token(const PTOKENNODE *);
+
+/* print all tokens in the tokenlist */
+void print_token_list(PTOKENNODE );
+
+/* Free the token List (all of the token nodes) described by tklist.
+* The TOKENNODE struct pointed by tklist is not freed, and it is changed to describe an empty list */
+void free_token_list(PTOKENNODE *);
+
+
+/* open the file with fileaName, scan it, and return a Token List. Report lexical errors along the process
+*/
+PTOKENNODE scanner();
+
+
+#endif

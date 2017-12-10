@@ -1,0 +1,18 @@
+﻿  minicpu.c
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(138): warning C4552: “<<”: 运算符不起任何作用；应输入带副作用的运算符
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(673): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(685): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(692): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(703): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(732): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(738): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(453): note: 参见“strtok”的声明
+c:\users\dell\documents\visual studio 2015\projects\complier\complier\minicpu.c(789): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: 参见“fopen”的声明
+  Complier.vcxproj -> C:\Users\dell\Documents\Visual Studio 2015\Projects\Complier\Debug\Complier.exe
+  Complier.vcxproj -> C:\Users\dell\Documents\Visual Studio 2015\Projects\Complier\Debug\Complier.pdb (Partial PDB)
