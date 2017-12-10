@@ -21,6 +21,9 @@
     <ClCompile Include="scanner.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="parser.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="util.h">

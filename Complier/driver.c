@@ -125,24 +125,23 @@ int main()
 	set_default_controls();
 	
 	/* ---------- now run the scanner --------------*/
-	theTokenList = scanner();
-	print_token_list(theTokenList);
-	//if (G_traceScanner) {
-	//	fprintf(stdout, "\nThis is the token list obtained by the scanner:\n");
-	//	print_token_list(theTokenList);
-	//	if (S_scannerErrorFound == TRUE) {
-	//		puts("!!! Scanner found some error.\n");
-	//		if (G_exitOnError == TRUE) {
-	//			puts("exit the compiler, due to the error. ");
-	//			system("pause");
-	//		}
-	//	}
-	//	else
-	//		puts(":) Scanner is happy, no error is found.\n");
-	//	if (G_pause == TRUE)
-	//		//pause_msg("Lexical analysis is done. Hit \"Enter\" to continue\n");
-	//		printf("error");
-	//}
+	theTokenList = scanner();	
+	if (G_traceScanner) {
+		fprintf(stdout, "\nThis is the token list obtained by the scanner:\n");
+		print_token_list(theTokenList);
+		if (S_scannerErrorFound == TRUE) {
+			puts("!!! Scanner found some error.\n");
+			if (G_exitOnError == TRUE) {
+				puts("exit the compiler, due to the error. ");
+				system("pause");
+			}
+		}
+		else
+			puts(":) Scanner is happy, no error is found.\n");
+		if (G_pause == TRUE)
+			//pause_msg("Lexical analysis is done. Hit \"Enter\" to continue\n");
+			printf("error");
+	}
 
 	/* ---------- now run the parser --------------*/
 //	if (parser == NULL)
@@ -168,7 +167,8 @@ int main()
 //	if (G_pause == TRUE)
 //		pause_msg("Grammar analysis is done. Hit \"Enter\" to continue\n");
 //
-//	/* ---------- now run the analyzer --------------*/
+//	
+/* ---------- now run the analyzer --------------*/
 //	if (analyzer == NULL)
 //		analyzer = new_s_analyzer(parseTree);
 //	else
