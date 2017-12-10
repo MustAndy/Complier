@@ -346,6 +346,5 @@ PTOKENNODE scanner()
 	{
 		printf("%s\n", buffer[i]);
 	}*/
-	printf("hahahhaa");
 	return theTokenList;
-}
+} 
