@@ -141,8 +141,8 @@ void InsertIntoLinkList(char buffer[400][20], int m, PTOKENNODE list)
 {
 	int TokenCounter = 1;
 	int LineNumber = 1;
-
-	for (int j = 0; j <= m; j++)
+	int j;
+	for (j = 0; j <= m; j++)
 	{
 		if (buffer[j][0] == 0)
 		{
@@ -329,6 +329,9 @@ InsertElem(&list, TokenCounter, buffer[j], RBR, LineNumber, "");
 			//	InsertElem(&list, TokenCounter, buffer[j], "");okenCounter++;
 		}
 	}
+
+	InsertElem(&list, TokenCounter, "ENDOFFILE", END, LineNumber, "");
+				TokenCounter++;
 }
 
 PTOKENNODE scanner()

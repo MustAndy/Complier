@@ -72,12 +72,12 @@ typedef struct parser Parser;
 /* Each function has a parameter p, that is a pointer to the parser itself, in order to use the resources belong to the parser */
 typedef struct parser {
 	TreeNode * (*parse)(Parser * p); /* returning a parse tree, based on the tokenList that the parser knows */
-	void(*set_token_list)(Parser * p, TOKENNODE tokenList); /* let the parser remember some tokenList */
+	void(*set_token_list)(Parser * p, PTOKENNODE theTokenList); /* let the parser remember some tokenList */
 	void(*print_tree)(Parser * p, TreeNode * tree); /* can print some parser tree */
 	void(*free_tree)(Parser *p, TreeNode * tree); /* free the space of a parse tree */
 	void * info; /* Some data belonging to this parser object. It can contain the tokenList that the parser knows. */
 } Parser;
-
+/*这个struct 中包含的是parse用到的函数 */
 
 
 

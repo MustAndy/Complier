@@ -11,7 +11,7 @@ extern Boolean P_keepParseTreeOnError; /* when true, the quit the problem when p
 extern Boolean P_parserExitOnError;  /* when true, the quit the problem when parser find some error */
 
 									 /* Returns a recursive-descent parser. The token list parameter will be used by the parser*/
-Parser * new_rd_parser(TOKENNODE tklist);
+Parser * new_rd_parser(PTOKENNODE tklist);
 
 typedef struct rdParserInfo {
 	TOKENNODE theTokenList;

@@ -142,7 +142,7 @@ SymbolTable * st_initialize(Boolean restart);
 /*  st_attach()
 [computation]:
 - Attach an initialized empty symbol table at the end of st->lower
-- Returns the pointer to the newly added empty symbol table.
+- Returns the pointer to the newly added empty  symbol table.
 [Precondition]: st is not NULL
 */
 SymbolTable * st_attach(SymbolTable* st);

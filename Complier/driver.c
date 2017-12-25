@@ -137,37 +137,39 @@ int main()
 			}
 		}
 		else
-			puts(":) Scanner is happy, no error is found.\n");
+			puts(" Scanner is happy, no error is found.\n");
 		if (G_pause == TRUE)
 			//pause_msg("Lexical analysis is done. Hit \"Enter\" to continue\n");
 			printf("error");
 	}
 
 	/* ---------- now run the parser --------------*/
-//	if (parser == NULL)
-//		parser = new_rd_parser(theTokenList);
-//	else
-//		parser->set_token_list(parser, theTokenList);
-//	parserInfo = (RDinfo *)parser->info;
-//	parser->parse(parser);
-//	parseTree = parserInfo->parseTree;
-//	if (G_traceParser == TRUE) {
-//		parser->print_tree(parser, parseTree);
-//	}
-//	if (parserInfo->parseErrorFound == TRUE) {
-//		puts("!!! Error of parsing found, cannot continue compiling the program.");
-//		if (G_exitOnError == TRUE) {
-//			puts("exit the compiler, due to the error. ");
-//			system("pause");
-//		}
-//	}
-//	else
-//		puts(":) Parser is happy, no error is found.\n");
-//
-//	if (G_pause == TRUE)
-//		pause_msg("Grammar analysis is done. Hit \"Enter\" to continue\n");
-//
-//	
+	
+	
+	/*if (parser == NULL)
+		parser = new_rd_parser(theTokenList);
+	else
+		parser->set_token_list(parser, theTokenList);
+	parserInfo = (RDinfo *)parser->info;
+	parser->parse(parser);
+	parseTree = parserInfo->parseTree;
+	if (G_traceParser == TRUE) {
+		parser->print_tree(parser, parseTree);
+	}
+	if (parserInfo->parseErrorFound == TRUE) {
+		puts("!!! Error of parsing found, cannot continue compiling the program.");
+		if (G_exitOnError == TRUE) {
+			puts("exit the compiler, due to the error. ");
+			system("pause");
+		}
+	}
+	else
+		puts(":) Parser is happy, no error is found.\n");
+
+	if (G_pause == TRUE)
+		pause_msg("Grammar analysis is done. Hit \"Enter\" to continue\n");
+
+	*/
 /* ---------- now run the analyzer --------------*/
 //	if (analyzer == NULL)
 //		analyzer = new_s_analyzer(parseTree);
