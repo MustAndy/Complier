@@ -13,7 +13,7 @@ Programming designed by the teacher: Liang, Zhiyao
 
 #include "util.h"
 #include "parse.h"
-#include "rd_parser.h"
+
 
 
 /* Function new_stmt_node creates a new statement
@@ -40,7 +40,7 @@ The message msg is printed out.
 Also print out the token information, the token string, line number
 Set the flag in parseErrorFound in the info as TRUE.
 */
-void syntax_error(RDinfo * info, const TOKENNODE * tknd, const char * msg);
+void syntax_error(const TOKENNODE * tknd, const char * msg);
 
 
 /* match()
@@ -55,17 +55,17 @@ behavior:
 -  Returns TRUE if the token type matches, otherwise return FALSE.
 -  If the token type does not match, error messages are printed out (call the syntax_error function)
 */
-Boolean match(RDinfo* info, const TOKENNODE *, TokenType, const char *);
+void match(TokenType expected);
 
 
 
 // move the current token node to its next one. 
 // If the current token node is NULL, it is an error. 
-void next_token_node(RDinfo * info);
+void next_token_node();
 
 // match the current token node (thisTokenNode )  with the expected type
 // If the match is successful, move the current token node to its next neighbor
-Boolean match_move(RDinfo * info, TokenType expected, const char * msg);
+Boolean match_move( TokenType expected, const char * msg);
 
 
 
@@ -75,7 +75,7 @@ If the match is successful, move the current token node to its next neighbor, an
 If the match fails, returns NONE (a token type that impossible to appear in a token list), without advancing the current token node, and, the error message is printed out (call the syntaxError function).
 The errorMsg should indicate what are the expected tokens, in order to clearly identify the error.
 */
-TokenType match_move_one_of(RDinfo * info, TokenType expected[], int expectedLen, const char * errorMsg);
+TokenType match_move_one_of( TokenType expected[], int expectedLen, const char * errorMsg);
 
 
 
@@ -118,7 +118,8 @@ All the sub-trees should be freed recursively.
 */
 void free_tree(TreeNode * nd);
 
-extern TOKENNODE* thisTokenNode;
+extern TOKENNODE* CurrentToken;
+extern TokenType CurrentTokenType;
 
 /* The function called if some bad thing happened (error) in the parsing.
 top: the top node of a tree after some parsing task.

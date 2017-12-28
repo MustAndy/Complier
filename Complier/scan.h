@@ -42,17 +42,24 @@ typedef enum
 	END
 } TokenType;
 
-//extern const char * S_toknTypeNames[];
 
+typedef struct {
+  char * string;   
+  // It is ok to assign  the return of copy_string(), which is char *, to string, 
+  TokenType type;
+} Token;
 
 // A node in a double linked list
-typedef struct TkNd {
-	char *Token;
-	TokenType type;
-	int lineNum;
-	char state[10];
-	struct TkNd * next;
-}TOKENNODE,*PTOKENNODE;
+typedef struct TkNd{
+  Token* token;
+  int lineNum;
+  struct TkNd * prev;
+  struct TkNd * next;
+}TOKENNODE;
+
+
+
+extern TOKENNODE* theTokenList;
 
 /* given a token type, return a string. For example, when parameter is INT, a string constant "INT" is returned */
 const char * token_type_to_string(TokenType);
@@ -60,26 +67,26 @@ const char * token_type_to_string(TokenType);
 /* function getToken returns the
 * next token in source file
 */
-PTOKENNODE* get_token(void);
+TOKENNODE* get_token(void);
 
 /* Procedure print_token prints a token
 * and its lexeme to the listing file
 */
 //void printToken( TokenType, const char* );
 
-void print_token(const PTOKENNODE *);
+void print_token(const TOKENNODE *);
 
 /* print all tokens in the tokenlist */
-void print_token_list(PTOKENNODE );
+void print_token_list(TOKENNODE *);
 
 /* Free the token List (all of the token nodes) described by tklist.
 * The TOKENNODE struct pointed by tklist is not freed, and it is changed to describe an empty list */
-void free_token_list(PTOKENNODE *);
+void free_token_list(TOKENNODE *);
 
 
 /* open the file with fileaName, scan it, and return a Token List. Report lexical errors along the process
 */
-PTOKENNODE scanner();
+TOKENNODE *scanner();
 
 
 #endif

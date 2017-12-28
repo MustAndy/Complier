@@ -17,6 +17,7 @@ typedef enum {
 }Boolean;
 
 
+
 /* Print the message msg, then wait for the user to hit the enter/return key.
 * The input queue is cleared before this function returns.
 */
@@ -27,7 +28,7 @@ void pause_msg(const char * msg);
 * <Return:>
 * A copy (a clone) of the input string str, including the ending '\0'. The space of the clone does not overlap with the space of str.
 * */
-char * string_clone(const char* str);
+const char * string_clone(const char* str);
 
 void clear_input_queue(void);
 

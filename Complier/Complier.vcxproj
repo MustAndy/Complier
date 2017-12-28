@@ -21,18 +21,20 @@
   <ItemGroup>
     <ClCompile Include="driver.c" />
     <ClCompile Include="parser.c" />
+    <ClCompile Include="parse_util.c" />
     <ClCompile Include="scanner.c" />
+    <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="analyzer.h" />
     <ClInclude Include="libs.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="parse_util.h" />
-    <ClInclude Include="rd_parser.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="symbol_table.h" />
     <ClInclude Include="s_analyzer.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="globals.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6DA88D35-CC01-4E0B-A585-525CB6B238B0}</ProjectGuid>

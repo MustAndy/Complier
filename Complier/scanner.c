@@ -1,49 +1,53 @@
 #include"libs.h"
 #include"scan.h"
+#include"globals.h"
 
-void print_token_list(PTOKENNODE);
+void print_token_list(TOKENNODE*);
 FILE *InputFile;
 Boolean IfComments = FALSE;
+TOKENNODE *head = NULL, *current = NULL;
 
-void CreateListTail(PTOKENNODE *theTokenList)
+
+void InsertElem(TOKENNODE *list, int i, char TokenString[], TokenType TokenType, int LineNumber)
 {
-	PTOKENNODE ptail, pnew;
-	*theTokenList = ptail = pnew = (PTOKENNODE)malloc(sizeof(struct TkNd));
-	ptail->next = pnew;
-	ptail = pnew;
-	ptail->next = NULL;
 
-}
-
-void InsertElem(PTOKENNODE *list, int i, char Token[], TokenType TokenType, int LineNumber, char state[])
-{
-	int j;
-	PTOKENNODE p, s;
-	p = *list;
-	j = 1;
-	while (p&&j < i)
-	{
-		p = p->next;
-		++j;
-	}
-	s = (PTOKENNODE)malloc(sizeof(struct TkNd));
-	s->Token = (char*)malloc(sizeof(char));
-	strcpy(s->Token, Token);
-	s->type = TokenType;
+	TOKENNODE *p, *s;
+	p = list;
+	
+	s = (TOKENNODE*)malloc(sizeof(struct TkNd));
+		  if (s == NULL) {
+		  fprintf(listing,"Waring: malloc node error.\n");
+		  return ;
+	  }
+	s->token = (Token*)calloc(1,sizeof(Token));
+	s->token->string = (char*)malloc(sizeof(strlen(TokenString))+1);	
+	strcpy(s->token->string, TokenString);
+	s->token->type = TokenType;
 	s->lineNum = LineNumber;
-	strcpy(s->state, state);
-	s->next = p->next;
-	p->next = s;
+	
+	s->next = s->next=NULL;
+	if (head == NULL) {
+		  head = s;
+		  current = s;
+	  }
+	  else {
+		  s->prev = current;
+		  current->next = s;
+
+		  current = s; /* point to tail */
+	  }
+	  list = head;
 }
 
-void print_token_list(PTOKENNODE list)
+void print_token_list(TOKENNODE* list)
 {
 	int j = 1;
-	while (list->next != NULL)
+
+	while (list!= NULL)
 	{
-		printf("j=%-2d", j);
-		printf("   ");
-		printf("%-6s %-3d %-4d %-5s\n", list->next->Token, list->next->type, list->next->lineNum, list->next->state);
+		fprintf(listing,"j=%-2d", j);
+		fprintf(listing,"   ");
+		fprintf(listing,"%-6s %-3d %-4d \n", list->token->string, list->token->type, list->lineNum);
 		list = list->next;
 		++j;
 	}
@@ -137,7 +141,7 @@ int GetWordsTobuffer(char Buf[300], char buffer[400][20], int m)
 	return m;
 }
 
-void InsertIntoLinkList(char buffer[400][20], int m, PTOKENNODE list)
+void InsertIntoLinkList(char buffer[400][20], int m, TOKENNODE *list)
 {
 	int TokenCounter = 1;
 	int LineNumber = 1;
@@ -163,12 +167,12 @@ void InsertIntoLinkList(char buffer[400][20], int m, PTOKENNODE list)
 		{
 			if (buffer[j][1] == 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], LTE, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], LTE, LineNumber);
 				TokenCounter++;
 			}
 			else if (buffer[j][1] != 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], LT, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], LT, LineNumber);
 				TokenCounter++;
 			}
 		}
@@ -176,12 +180,12 @@ void InsertIntoLinkList(char buffer[400][20], int m, PTOKENNODE list)
 		{
 			if (buffer[j][1] == 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], GTE, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], GTE, LineNumber);
 				TokenCounter++;
 			}
 			else if (buffer[j][1] != 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], GT, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], GT, LineNumber);
 				TokenCounter++;
 			}
 		}
@@ -189,53 +193,53 @@ void InsertIntoLinkList(char buffer[400][20], int m, PTOKENNODE list)
 		{
 			if (buffer[j][1] == 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], NEQ, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], NEQ, LineNumber);
 				TokenCounter++;
 			}
 		}
 		else if (buffer[j][0] == 43)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], PLUS, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], PLUS, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] ==123 )
 		{
-InsertElem(&list, TokenCounter, buffer[j], LCUR, LineNumber, "");
+InsertElem(list, TokenCounter, buffer[j], LCUR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] ==125 )
 		{
-InsertElem(&list, TokenCounter, buffer[j], RCUR, LineNumber, "");
+InsertElem(list, TokenCounter, buffer[j], RCUR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] ==91 )
 		{
-InsertElem(&list, TokenCounter, buffer[j], LBR, LineNumber, "");
+InsertElem(list, TokenCounter, buffer[j], LBR, LineNumber);
 			TokenCounter++;
 		}
 				else if (buffer[j][0] ==93 )
 		{
-InsertElem(&list, TokenCounter, buffer[j], RBR, LineNumber, "");
+InsertElem(list, TokenCounter, buffer[j], RBR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 45)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], MINUS, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], MINUS, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 42)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], MULTP, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], MULTP, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 47)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], OVER, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], OVER, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 59)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], SEMI, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], SEMI, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 10)
@@ -246,108 +250,109 @@ InsertElem(&list, TokenCounter, buffer[j], RBR, LineNumber, "");
 		{
 			if (buffer[j][1] == 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], EQ, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], EQ, LineNumber);
 				TokenCounter++;
 			}
 			else if (buffer[j][1] != 61)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], ASSIGN, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], ASSIGN, LineNumber);
 				TokenCounter++;
 			}
 		}
 		else if (buffer[j][0] == 41)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], RPAR, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], RPAR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 40)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], LPAR, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], LPAR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 44)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], COMMA, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], COMMA, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] > 47 && buffer[j][0] < 58)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], NUMBER, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], NUMBER, LineNumber);
 			TokenCounter++;
 		}
 		//IF, ELSE, INT, RETURN, VOID, WHILE, DO, FOR,
 		else if (strcmp(buffer[j], "if") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], IF, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], IF, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "else") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], ELSE, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], ELSE, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "int") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], INT, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], INT, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "return") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], RETURN, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], RETURN, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "void") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], VOID, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], VOID, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "while") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], WHILE, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], WHILE, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "do") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], DO, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], DO, LineNumber);
 			TokenCounter++;
 		}
 		else if (strcmp(buffer[j], "for") == 0)
 		{
-			InsertElem(&list, TokenCounter, buffer[j], FOR, LineNumber, "");
+			InsertElem(list, TokenCounter, buffer[j], FOR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] < 123 && buffer[j][0] > 64)
 		{
 			if (buffer[j][0] < 90 || buffer[j][0]>96)
 			{
-				InsertElem(&list, TokenCounter, buffer[j], ID, LineNumber, "");
+				InsertElem(list, TokenCounter, buffer[j], ID, LineNumber);
 				TokenCounter++;
 			}
 		}
 		else
 		{
-			//	InsertElem(&list, TokenCounter, buffer[j], "");okenCounter++;
+			//	InsertElem(list, TokenCounter, buffer[j]);okenCounter++;
 		}
 	}
 
-	InsertElem(&list, TokenCounter, "ENDOFFILE", END, LineNumber, "");
+	InsertElem(list, TokenCounter, "ENDOFFILE", END, LineNumber);
 				TokenCounter++;
 }
 
-PTOKENNODE scanner()
+TOKENNODE *scanner()
 {
-	printf("scanner start!\n");
+	fprintf(listing,"scanner start!\n");
 	char buffer[400][20] = { "" };//use for whole page of code
 	char Buf[300] = { "" };//use for one line 	
-	PTOKENNODE theTokenList = NULL;
-	CreateListTail(&theTokenList);
+	head = NULL;
+	
+	//CreateListTail(&theTokenList);
 	int WordsCounter = 0;
-	WordsCounter = GetWordsTobuffer(&Buf, &buffer, WordsCounter);
-	InsertIntoLinkList(&buffer, WordsCounter, theTokenList);
+	WordsCounter = GetWordsTobuffer(Buf, buffer, WordsCounter);
+	InsertIntoLinkList(buffer, WordsCounter, head);
 	//print_token_list(theTokenList);
 	/*for (int i = 0; i < WordsCounter; i++)
 	{
-		printf("%s\n", buffer[i]);
+		fprintf(listing,"%s\n", buffer[i]);
 	}*/
-	return theTokenList;
+	return head;
 } 
