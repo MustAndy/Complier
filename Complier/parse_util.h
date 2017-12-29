@@ -55,7 +55,7 @@ behavior:
 -  Returns TRUE if the token type matches, otherwise return FALSE.
 -  If the token type does not match, error messages are printed out (call the syntax_error function)
 */
-void match(TokenType expected);
+Boolean match(TokenType expected);
 
 
 
@@ -65,7 +65,7 @@ void next_token_node();
 
 // match the current token node (thisTokenNode )  with the expected type
 // If the match is successful, move the current token node to its next neighbor
-Boolean match_move( TokenType expected, const char * msg);
+Boolean match_move( TokenType expected);
 
 
 

@@ -144,16 +144,26 @@ void getToken()
 		exit(1);
 	}
 }
-
-void match(TokenType expected)
+Boolean match(TokenType expected)
 {
-	if (expected == END&&CurrentTokenType == expected)
+	if (CurrentTokenType = expected)
 	{
-		return;
+		return TRUE;
 	}
+	else
+	{
+		syntax_error(CurrentToken,"Unexpected Token!");return FALSE;
+	}
+}
+Boolean match_move(TokenType expected)
+{
 	if (CurrentTokenType == expected)
 	{
-		getToken();
+		getToken(); return TRUE;
+	}
+	else
+	{
+		syntax_error(CurrentToken,"Unexpected Token!");return FALSE;
 	}
 }
 Boolean check(const TOKENNODE * nd,TokenType expected)
@@ -165,6 +175,39 @@ Boolean check(const TOKENNODE * nd,TokenType expected)
 	else
 		return FALSE;
 }
+
+void free_tree(TreeNode * nd){
+  int j;
+  if (nd==NULL)
+    return ;
+  // free the children
+  for(j=0 ; j<MAX_CHILDREN; j++)
+    free_tree(nd->child[j]);
+  // free the siblings (free a list)
+  free_tree(nd->rSibling);
+  // free this token node
+  free(nd);
+  return;
+}
+
+TreeNode * parse_bad_return(TreeNode * top, Boolean * ok){
+	*ok = FALSE;
+	if(P_keepParseTreeOnError == TRUE){ /* keep the tree */
+		return top;
+	}
+	else{
+		free_tree(top);  /*release the memory of the tree */
+		return NULL;
+	}
+}
+
+
+TreeNode * parse_good_return(TreeNode * top, Boolean * ok){
+	*ok = TRUE;
+	return top;
+}
+
+
 static void print_spaces(int indentNum) {
 	int i;
 	for (i=0;i<indentNum;i++)

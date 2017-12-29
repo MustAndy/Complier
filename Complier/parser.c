@@ -39,124 +39,121 @@
 TokenType CurrentTokenType;
 TOKENNODE *CurrentToken;
 
-void getToken();
-void match(TokenType expected);
-
-TreeNode * dcl_list();
+TreeNode * dcl_list(Boolean *ok);
 
 /* 3 */
-TreeNode * declaration();
+TreeNode * declaration(Boolean *ok);
 
 /* 4 */
 static TokenType  type_specifier(void);
 
 /* 5 */
-TreeNode * var_dcl();
+TreeNode * var_dcl(Boolean *ok);
 
 /* 6 */
-TreeNode * array_dcl();
+TreeNode * array_dcl(Boolean *ok);
 
 /* 7 */
-TreeNode * fun_dcl();
+TreeNode * fun_dcl(Boolean *ok);
 
 /* 8 */
-TreeNode * params();
+TreeNode * params(Boolean *ok);
 
 /* 9 */
-TreeNode * param_list();
+TreeNode * param_list(Boolean *ok);
 
 /* 10 */
-TreeNode * param();
+TreeNode * param(Boolean *ok);
 
 /* 11 */
-TreeNode * compound_stmt();
+TreeNode * compound_stmt(Boolean *ok);
 
 /* 12   can return NULL */
-TreeNode * local_dcl_list();
+TreeNode * local_dcl_list(Boolean *ok);
 
 /* 13 */
-TreeNode * local_dcl();
+TreeNode * local_dcl(Boolean *ok);
 
 /* 14 can return NULL */
-TreeNode * stmt_list();
+TreeNode * stmt_list(Boolean *ok);
 
 /* 15 */
-TreeNode * statement();
+TreeNode * statement(Boolean *ok);
 
 /* 16 */
-TreeNode * selection_stmt();
+TreeNode * selection_stmt(Boolean *ok);
 
 /* 17 can return NULL */
-TreeNode * else_part();
+TreeNode * else_part(Boolean *ok);
 
 /* 18  */
-TreeNode * while_stmt();
+TreeNode * while_stmt(Boolean *ok);
 
 /* 19 */
-TreeNode * do_while_stmt();
+TreeNode * do_while_stmt(Boolean *ok);
 
 /* 20 */
-TreeNode * for_stmt();
+TreeNode * for_stmt(Boolean *ok);
 
 /* 21 Can return NULL */
-TreeNode * expr_or_empty();
+TreeNode * expr_or_empty(Boolean *ok);
 
 /* 22 */
-TreeNode * return_stmt();
+TreeNode * return_stmt(Boolean *ok);
 
 /* 23 */
-TreeNode * null_stmt();
+TreeNode * null_stmt(Boolean *ok);
 
 /* 24 */
-TreeNode * expr_stmt();
+TreeNode * expr_stmt(Boolean *ok);
 
 /* 25 */
-TreeNode * expression();
+TreeNode * expression(Boolean *ok);
 
 /* 26 */
-TreeNode * comma_expr();
+TreeNode * comma_expr(Boolean *ok);
 
 /* 27 */
-TreeNode * assignment_expr();
+TreeNode * assignment_expr(Boolean *ok);
 
 /* 28 */
-TreeNode * lhs();
+TreeNode * lhs(Boolean *ok);
 
 /* 29 */
-TreeNode * array_element();
+TreeNode * array_element(Boolean *ok);
 
 /* 30 */
-TreeNode * equality_expr();
+TreeNode * equality_expr(Boolean *ok);
 
 /* 31 */
-TreeNode * eqop();
+TreeNode * eqop(Boolean *ok);
 
 /* 32 */
-TreeNode * relational_expr();
+TreeNode * relational_expr(Boolean *ok);
 
 /* 33 */
-TreeNode * relop();
+TreeNode * relop(Boolean *ok);
 
 /* 34 */
-TreeNode * additive_expr();
+TreeNode * additive_expr(Boolean *ok);
 
 /* 35 */
-TreeNode * addop();
+TreeNode * addop(Boolean *ok);
 
 /* 36 */
-TreeNode * multiplicative_expr();
+TreeNode * multiplicative_expr(Boolean *ok);
 
 /* 37 */
-TreeNode * mulop();
+TreeNode * mulop(Boolean *ok);
 
 /* 38 */
-TreeNode * primary_expr();
+TreeNode * primary_expr(Boolean *ok);
 
 /* 39 */
-TreeNode * call();
+TreeNode * call(Boolean *ok);
 
 /* 40  can return NULL */
-TreeNode * arg_list();
+TreeNode * arg_list(Boolean *ok);
 
 
 
@@ -165,13 +162,13 @@ TreeNode * arg_list();
 /*
 declaration-list  ===>  declaration-list declaration | declaration
 */
-TreeNode *declaration_list()
+TreeNode *declaration_list(Boolean *ok)
 {
 	TreeNode * t = NULL;
 	TreeNode * l = NULL;
 	TreeNode * r = NULL;
 
-	r = declaration();
+	r = declaration(ok);
 
 	if (l == NULL) { // assign the first node of declaration list
 		t = l = r;
@@ -188,16 +185,16 @@ TreeNode *declaration_list()
 /*
 declaration  ===>  var-declaration | fun-declaration | array-declaration
 */
-TreeNode *declaration()
+TreeNode *declaration(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	t = var_dcl();
+	t = var_dcl(ok);
 	if (t != NULL) return t;
 
-	t = array_dcl();
+	t = array_dcl(ok);
 	if (t != NULL) return t;
 
-	t = fun_dcl();
+	t = fun_dcl(ok);
 	if (t != NULL) return t;
 
 	return t;
@@ -221,7 +218,7 @@ TokenType  type_specifier(void)
 /*
 var-declaration  ===>  type-specifier ID ;
 */
-TreeNode *var_dcl()
+TreeNode *var_dcl(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	int lineNum = CurrentToken->lineNum;
@@ -232,21 +229,22 @@ TreeNode *var_dcl()
 	{
 		if (check(nextone, ID) && check(nexttwo, SEMI))
 		{
-			TokenType type = type_specifier();
+			TokenType type = type_specifier();//Move one Token
 			CurrentToken = reach_node(node, 3);//use three token
 
 			t = new_dcl_node(VAR_DCL, lineNum);
 			t->attr.dclAttr.type = (type == VOID ? VOID_TYPE : INT_TYPE);
 			t->attr.dclAttr.name = string_clone(nextone->token->string);
+			return t;
 		}
 	}
-	return t;
+	return NULL;
 }
 
 /*
 array-declaration  ===>  type-specifier ID  [ NUM ] ;
 */
-TreeNode *array_dcl()
+TreeNode *array_dcl(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	int lineNum = CurrentToken->lineNum;
@@ -264,14 +262,14 @@ TreeNode *array_dcl()
 			check(nextfour, RBR) &&
 			check(nextfive, SEMI))
 		{
-			TokenType type = type_specifier();
+			TokenType type = type_specifier();//move one token
 			CurrentToken = reach_node(node, 6);//use 6 token.
 			t = new_dcl_node(ARRAY_DCL, lineNum);
 			t->attr.dclAttr.type = (type == VOID ? VOID_TYPE : INT_TYPE);
 			t->attr.dclAttr.size = atoi(nextthree->token->string);
 			t->attr.dclAttr.name = string_clone(nextone->token->string);
 
-				return t;
+			return t;
 		}
 	}
 	return NULL;
@@ -280,238 +278,258 @@ TreeNode *array_dcl()
 /*
 fun-declaration  ===>  type-specifier ID ( params ) compound-stmt
 */
-TreeNode *fun_dcl()
+TreeNode *fun_dcl(Boolean *ok)
 {
-	TreeNode *t = NULL;
-	return t;
+	TreeNode *t = new_dcl_node(FUN_DCL,CurrentToken->lineNum);
+	TokenType type = type_specifier();
+	TOKENNODE *funID = CurrentToken;
+	if (match_move(ID))
+	{
+		t->attr.dclAttr.type = (type = INT) ? INT_TYPE : VOID_TYPE;
+		t->attr.dclAttr.name = string_clone(funID->token->string);
+
+		if (match_move(LPAR))
+		{
+			t->child[0] = params(ok);
+			if (match_move(RPAR))
+			{
+				t->child[1] = compound_stmt(ok);
+				return parse_good_return(t,ok);
+			}
+		}
+	}
+
+	return parse_bad_return(t,ok);
 }
 
-/* 8 */
-TreeNode * params()
+/*
+params  ===>  param-list | void
+*/
+TreeNode * params(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 9 */
-TreeNode * param_list()
+TreeNode * param_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 10 */
-TreeNode * param()
+TreeNode * param(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 11 */
-TreeNode * compound_stmt()
+TreeNode * compound_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 12   can return NULL */
-TreeNode * local_dcl_list()
+TreeNode * local_dcl_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 13 */
-TreeNode * local_dcl()
+TreeNode * local_dcl(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 14 can return NULL */
-TreeNode * stmt_list()
+TreeNode * stmt_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 15 */
-TreeNode * statement()
+TreeNode * statement(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 16 */
-TreeNode * selection_stmt()
+TreeNode * selection_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 17 can return NULL */
-TreeNode * else_part()
+TreeNode * else_part(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 18  */
-TreeNode * while_stmt()
+TreeNode * while_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 19 */
-TreeNode * do_while_stmt()
+TreeNode * do_while_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 20 */
-TreeNode * for_stmt()
+TreeNode * for_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 21 Can return NULL */
-TreeNode * expr_or_empty()
+TreeNode * expr_or_empty(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 22 */
-TreeNode * return_stmt()
+TreeNode * return_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 23 */
-TreeNode * null_stmt()
+TreeNode * null_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 24 */
-TreeNode * expr_stmt()
+TreeNode * expr_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 25 */
-TreeNode * expression()
+TreeNode * expression(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 26 */
-TreeNode * comma_expr()
+TreeNode * comma_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 27 */
-TreeNode * assignment_expr()
+TreeNode * assignment_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 28 */
-TreeNode * lhs()
+TreeNode * lhs(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 29 */
-TreeNode * array_element()
+TreeNode * array_element(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 30 */
-TreeNode * equality_expr()
+TreeNode * equality_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 31 */
-TreeNode * eqop()
+TreeNode * eqop(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 32 */
-TreeNode * relational_expr()
+TreeNode * relational_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 33 */
-TreeNode * relop()
+TreeNode * relop(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 34 */
-TreeNode * additive_expr()
+TreeNode * additive_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 35 */
-TreeNode * addop()
+TreeNode * addop(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 36 */
-TreeNode * multiplicative_expr()
+TreeNode * multiplicative_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 37 */
-TreeNode * mulop()
+TreeNode * mulop(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 38 */
-TreeNode * primary_expr()
+TreeNode * primary_expr(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 39 */
-TreeNode * call()
+TreeNode * call(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
 }
 
 /* 40  can return NULL */
-TreeNode * arg_list()
+TreeNode * arg_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	return t;
@@ -521,7 +539,7 @@ TreeNode *parse()
 {
 	TreeNode *t;
 	CurrentToken = theTokenList;
-	
-	t = declaration_list();
+	Boolean state;
+	t = declaration_list(state);
 	return t;
 }
