@@ -304,25 +304,91 @@ TreeNode *fun_dcl(Boolean *ok)
 
 /*
 params  ===>  param-list | void
+check if the params are void
 */
 TreeNode * params(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	TOKENNODE *old = CurrentToken;
+	TOKENNODE *nextone = reach_node(CurrentToken, 1);
+	if (check(old, VOID) && check(nextone, RPAR))
+	{
+		t->attr.dclAttr.type = VOID_TYPE;
+		t->attr.dclAttr.name = string_clone(old->token->string);
+		CurrentToken = reach_node(CurrentToken, 1);
+		*ok = TRUE;
+		return t;
+	}
+
+	return param_list(ok);
 }
 
-/* 9 */
+/*
+param-list  ===>  param-list ', param | param
+*/
 TreeNode * param_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	TreeNode *last  = NULL;
+	TreeNode *right = NULL;
+	Boolean status;
+	while (!check(CurrentToken, RPAR)) {
+
+		if (right != NULL) {
+			if (!match_move(COMMA))
+					return parse_bad_return(t, ok);
+		}
+
+		right = param(&status);
+		
+		if (last == NULL) {
+			t = last = right;
+		}
+		else if (right != NULL) {
+			last->rSibling = right;
+			right->lSibling = last;
+
+			last = right;
+		}
+
+		if (status == FALSE)
+			return parse_bad_return(t, ok);
+	}
+
+	return parse_good_return(t, ok);
 }
 
 /* 10 */
 TreeNode * param(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	TOKENNODE *nextone = reach_node(CurrentToken, 1);
+	TOKENNODE *nexttwo = reach_node(CurrentToken, 2);
+	TOKENNODE *nextthree = reach_node(CurrentToken, 3);
+	int parameterSteps;
+	TokenType type = type_specifier();
+
+	if (type == INT || type == VOID)
+	{
+		ParamKind paramtype = VAR_PARAM;
+		if (check(nextone, ID))
+		{
+			parameterSteps = 1;
+			if (check(nexttwo, LBR) && check(nextthree, RBR))//check array
+			{
+				paramtype = ARRAY_PARAM;
+				parameterSteps += 2;
+			}
+			t = new_param_node(paramtype,nextone->lineNum);
+			t->attr.dclAttr.type = (type == VOID ? VOID_TYPE : INT_TYPE);
+			t->attr.dclAttr.name = string_clone(nextone->token->string);
+			CurrentToken = reach_node(CurrentToken, parameterSteps);
+
+			return parse_good_return(t,ok);
+		}
+	}
+
+	return parse_bad_return(t,ok);
 }
 
 /* 11 */
@@ -539,7 +605,7 @@ TreeNode *parse()
 {
 	TreeNode *t;
 	CurrentToken = theTokenList;
-	Boolean state;
-	t = declaration_list(state);
+	Boolean *state = TRUE;
+	t = declaration_list(&state);
 	return t;
 }

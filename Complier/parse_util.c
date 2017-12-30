@@ -146,7 +146,7 @@ void getToken()
 }
 Boolean match(TokenType expected)
 {
-	if (CurrentTokenType = expected)
+	if (CurrentToken->token->type = expected)
 	{
 		return TRUE;
 	}
@@ -157,7 +157,7 @@ Boolean match(TokenType expected)
 }
 Boolean match_move(TokenType expected)
 {
-	if (CurrentTokenType == expected)
+	if (CurrentToken->token->type == expected)
 	{
 		getToken(); return TRUE;
 	}
