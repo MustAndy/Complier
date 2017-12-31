@@ -48,13 +48,13 @@ TreeNode * declaration(Boolean *ok);
 static TokenType  type_specifier(void);
 
 /* 5 */
-TreeNode * var_dcl(Boolean *ok);
+TreeNode * var_declaration(Boolean *ok);
 
 /* 6 */
-TreeNode * array_dcl(Boolean *ok);
+TreeNode * array_declaration(Boolean *ok);
 
 /* 7 */
-TreeNode * fun_dcl(Boolean *ok);
+TreeNode * fun_declaration(Boolean *ok);
 
 /* 8 */
 TreeNode * params(Boolean *ok);
@@ -72,7 +72,7 @@ TreeNode * compound_stmt(Boolean *ok);
 TreeNode * local_dcl_list(Boolean *ok);
 
 /* 13 */
-TreeNode * local_dcl(Boolean *ok);
+TreeNode * local_declaration(Boolean *ok);
 
 /* 14 can return NULL */
 TreeNode * stmt_list(Boolean *ok);
@@ -168,17 +168,19 @@ TreeNode *declaration_list(Boolean *ok)
 	TreeNode * l = NULL;
 	TreeNode * r = NULL;
 
-	r = declaration(ok);
+	while (!check(CurrentToken, FOR))
+	{
+		r = declaration(ok);
 
-	if (l == NULL) { // assign the first node of declaration list
-		t = l = r;
+		if (l == NULL) { // assign the first node of declaration list
+			t = l = r;
+		}
+		else if (r != NULL) {
+			l->rSibling = r;
+			r->lSibling = l;
+			l = r;
+		}
 	}
-	else if (r != NULL) {
-		l->rSibling = r;
-		r->lSibling = l;
-		l = r;
-	}
-
 	return t;
 }
 
@@ -188,13 +190,13 @@ declaration  ===>  var-declaration | fun-declaration | array-declaration
 TreeNode *declaration(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	t = var_dcl(ok);
+	t = var_declaration(ok);
 	if (t != NULL) return t;
 
-	t = array_dcl(ok);
+	t = array_declaration(ok);
 	if (t != NULL) return t;
 
-	t = fun_dcl(ok);
+	t = fun_declaration(ok);
 	if (t != NULL) return t;
 
 	return t;
@@ -218,7 +220,7 @@ TokenType  type_specifier(void)
 /*
 var-declaration  ===>  type-specifier ID ;
 */
-TreeNode *var_dcl(Boolean *ok)
+TreeNode *var_declaration(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	int lineNum = CurrentToken->lineNum;
@@ -244,14 +246,14 @@ TreeNode *var_dcl(Boolean *ok)
 /*
 array-declaration  ===>  type-specifier ID  [ NUM ] ;
 */
-TreeNode *array_dcl(Boolean *ok)
+TreeNode *array_declaration(Boolean *ok)
 {
 	TreeNode *t = NULL;
 	int lineNum = CurrentToken->lineNum;
 	TOKENNODE *node = CurrentToken;
-	TOKENNODE *nextone  = reach_node(CurrentToken, 1);
-	TOKENNODE *nexttwo  = reach_node(CurrentToken, 2);
-	TOKENNODE *nextthree  = reach_node(CurrentToken, 3);
+	TOKENNODE *nextone = reach_node(CurrentToken, 1);
+	TOKENNODE *nexttwo = reach_node(CurrentToken, 2);
+	TOKENNODE *nextthree = reach_node(CurrentToken, 3);
 	TOKENNODE *nextfour = reach_node(CurrentToken, 4);
 	TOKENNODE *nextfive = reach_node(CurrentToken, 5);
 	if (check(CurrentToken, INT) || check(CurrentToken, VOID))
@@ -278,11 +280,12 @@ TreeNode *array_dcl(Boolean *ok)
 /*
 fun-declaration  ===>  type-specifier ID ( params ) compound-stmt
 */
-TreeNode *fun_dcl(Boolean *ok)
+TreeNode *fun_declaration(Boolean *ok)
 {
-	TreeNode *t = new_dcl_node(FUN_DCL,CurrentToken->lineNum);
+	TreeNode *t = new_dcl_node(FUN_DCL, CurrentToken->lineNum);
 	TokenType type = type_specifier();
 	TOKENNODE *funID = CurrentToken;
+	Boolean status;
 	if (match_move(ID))
 	{
 		t->attr.dclAttr.type = (type = INT) ? INT_TYPE : VOID_TYPE;
@@ -290,16 +293,16 @@ TreeNode *fun_dcl(Boolean *ok)
 
 		if (match_move(LPAR))
 		{
-			t->child[0] = params(ok);
+			t->child[0] = params(&status);
 			if (match_move(RPAR))
 			{
-				t->child[1] = compound_stmt(ok);
-				return parse_good_return(t,ok);
+				t->child[1] = compound_stmt(&status);
+				return parse_good_return(t, ok);
 			}
 		}
 	}
 
-	return parse_bad_return(t,ok);
+	return parse_bad_return(t, ok);
 }
 
 /*
@@ -313,6 +316,7 @@ TreeNode * params(Boolean *ok)
 	TOKENNODE *nextone = reach_node(CurrentToken, 1);
 	if (check(old, VOID) && check(nextone, RPAR))
 	{
+		t = new_param_node(VOID_PARAM, nextone->lineNum);
 		t->attr.dclAttr.type = VOID_TYPE;
 		t->attr.dclAttr.name = string_clone(old->token->string);
 		CurrentToken = reach_node(CurrentToken, 1);
@@ -329,18 +333,18 @@ param-list  ===>  param-list ', param | param
 TreeNode * param_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	TreeNode *last  = NULL;
+	TreeNode *last = NULL;
 	TreeNode *right = NULL;
 	Boolean status;
 	while (!check(CurrentToken, RPAR)) {
 
 		if (right != NULL) {
 			if (!match_move(COMMA))
-					return parse_bad_return(t, ok);
+				return parse_bad_return(t, ok);
 		}
 
 		right = param(&status);
-		
+
 		if (last == NULL) {
 			t = last = right;
 		}
@@ -358,7 +362,10 @@ TreeNode * param_list(Boolean *ok)
 	return parse_good_return(t, ok);
 }
 
-/* 10 */
+/* 
+param  ===>  type-specifier 'ID | type-specifier 'ID '[  '] 
+can be array, reuse the decl function above.
+*/
 TreeNode * param(Boolean *ok)
 {
 	TreeNode *t = NULL;
@@ -379,37 +386,84 @@ TreeNode * param(Boolean *ok)
 				paramtype = ARRAY_PARAM;
 				parameterSteps += 2;
 			}
-			t = new_param_node(paramtype,nextone->lineNum);
+			t = new_param_node(paramtype, nextone->lineNum);
 			t->attr.dclAttr.type = (type == VOID ? VOID_TYPE : INT_TYPE);
 			t->attr.dclAttr.name = string_clone(nextone->token->string);
 			CurrentToken = reach_node(CurrentToken, parameterSteps);
 
-			return parse_good_return(t,ok);
+			return parse_good_return(t, ok);
 		}
 	}
 
-	return parse_bad_return(t,ok);
+	return parse_bad_return(t, ok);
 }
 
-/* 11 */
+/*
+compound-stmt  ===>  { local-declarations statement-list }
+*/
 TreeNode * compound_stmt(Boolean *ok)
 {
-	TreeNode *t = NULL;
-	return t;
+	Boolean status;
+	TreeNode *node = new_stmt_node(CMPD_STMT, CurrentToken->lineNum);
+
+	if (match_move(LCUR))
+	{
+		node->child[0] = local_dcl_list(ok);
+		node->child[1] = stmt_list(ok);
+
+		if (match_move(RCUR))
+		{
+			return parse_good_return(node, ok);
+		}
+	}
+	return parse_bad_return(node, ok);
 }
 
-/* 12   can return NULL */
+/*
+   local-dcl-list  ===>  local-dcl local-dcl-list | EMPTY
+   can be null
+*/
 TreeNode * local_dcl_list(Boolean *ok)
 {
 	TreeNode *t = NULL;
+	Boolean status;
+
+	t = local_declaration(&status);
+
+	if (t == NULL) return NULL;
+
+	TreeNode *sibling = local_dcl_list(ok);
+	if (sibling != NULL) {
+		t->rSibling = sibling;
+		sibling->lSibling = t;
+	}
+
+	*ok = TRUE;
 	return t;
 }
 
-/* 13 */
-TreeNode * local_dcl(Boolean *ok)
+/*
+local-dcl	===>  var-dcl | array-dcl
+*/
+TreeNode * local_declaration(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+
+	t = var_declaration(ok);
+	if (t != NULL) {
+		*ok = TRUE;
+		return t;
+	}
+
+	t = array_declaration(ok);
+	if (t != NULL) {
+		*ok = TRUE;
+		return t;
+	}
+
+	*ok = FALSE;
+	return NULL;
+
 }
 
 /* 14 can return NULL */
@@ -531,12 +585,6 @@ TreeNode * equality_expr(Boolean *ok)
 	return t;
 }
 
-/* 31 */
-TreeNode * eqop(Boolean *ok)
-{
-	TreeNode *t = NULL;
-	return t;
-}
 
 /* 32 */
 TreeNode * relational_expr(Boolean *ok)
@@ -545,11 +593,24 @@ TreeNode * relational_expr(Boolean *ok)
 	return t;
 }
 
-/* 33 */
+/* 
+relop  ===>  <= | < | > | >= | == | !=
+*/
 TreeNode * relop(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	
+	if (check(CurrentToken, LT) || check(CurrentToken, LTE)
+					|| check(CurrentToken, GT) || check(CurrentToken, GTE)
+		||check(CurrentToken, EQ) || check(CurrentToken, NEQ)) 
+	{
+		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
+		t->attr.exprAttr.op  = CurrentToken->token->type;
+		
+		return parse_good_return(t, ok);
+	}
+
+	return parse_bad_return(NULL, ok);
 }
 
 /* 34 */
@@ -559,11 +620,20 @@ TreeNode * additive_expr(Boolean *ok)
 	return t;
 }
 
-/* 35 */
+/* 
+addop  ===>  + | -
+*/
 TreeNode * addop(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	if (check(CurrentToken, PLUS) || check(CurrentToken, MINUS)) {
+		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
+		t->attr.exprAttr.op  = CurrentToken->token->type;
+		
+		return parse_good_return(t, ok);
+	}
+
+	return parse_bad_return(NULL, ok);
 }
 
 /* 36 */
@@ -573,11 +643,20 @@ TreeNode * multiplicative_expr(Boolean *ok)
 	return t;
 }
 
-/* 37 */
+/*
+mulop  ===>  * | /
+*/
 TreeNode * mulop(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	if (check(CurrentToken, MULTP) || check(CurrentToken, OVER)) {
+		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
+		t->attr.exprAttr.op  = CurrentToken->token->type;
+		
+		return parse_good_return(t, ok);
+	}
+
+	return parse_bad_return(NULL, ok);
 }
 
 /* 38 */
