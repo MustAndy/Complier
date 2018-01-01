@@ -18,9 +18,13 @@
 11. local-declarations  ===>  local-declarations var-declaration | empty
 12. statement-list  ===>  statement-list statement |empty
 13. statement  ===>  expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
+adding: iteration-stmt  ===>  for-stmt | while-stmt | do-while-stmt
+adding: for-stmt ===> 'for '( expression '; expression '; expression ') statement
+adding: do-while-stmt  ===>  'do statement 'while '( expression ') ';
+adding: while-stmt  ===>  while ( expression ) statement
 14. expression-stmt  ===>  expression ; | ;
 15. selection-stmt  ===>  if (expression ) statement |if (expression ) statement else statement
-16. iteration-stmt  ===>  while ( expression ) statement
+16. (delete) iteration-stmt  ===>  while ( expression ) statement
 17. return-stmt  ===>  return ; | return expression ;
 18. expression  ===>  var = expression | simple-exprssion
 19. var  ===>  ID | ID [expression]
@@ -75,10 +79,13 @@ TreeNode * local_dcl_list(Boolean *ok);
 TreeNode * local_declaration(Boolean *ok);
 
 /* 14 can return NULL */
-TreeNode * stmt_list(Boolean *ok);
+TreeNode * statement_list(Boolean *ok);
 
 /* 15 */
 TreeNode * statement(Boolean *ok);
+
+/*15.5*/
+TreeNode *iteration_stmt(Boolean *ok);
 
 /* 16 */
 TreeNode * selection_stmt(Boolean *ok);
@@ -95,14 +102,8 @@ TreeNode * do_while_stmt(Boolean *ok);
 /* 20 */
 TreeNode * for_stmt(Boolean *ok);
 
-/* 21 Can return NULL */
-TreeNode * expr_or_empty(Boolean *ok);
-
 /* 22 */
 TreeNode * return_stmt(Boolean *ok);
-
-/* 23 */
-TreeNode * null_stmt(Boolean *ok);
 
 /* 24 */
 TreeNode * expr_stmt(Boolean *ok);
@@ -294,10 +295,11 @@ TreeNode *fun_declaration(Boolean *ok)
 		if (match_move(LPAR))
 		{
 			t->child[0] = params(&status);
-			if (match_move(RPAR))
+			if (match_move(RPAR) && status == TRUE)
 			{
 				t->child[1] = compound_stmt(&status);
-				return parse_good_return(t, ok);
+				if (status == TRUE)
+					return parse_good_return(t, ok);
 			}
 		}
 	}
@@ -362,8 +364,8 @@ TreeNode * param_list(Boolean *ok)
 	return parse_good_return(t, ok);
 }
 
-/* 
-param  ===>  type-specifier 'ID | type-specifier 'ID '[  '] 
+/*
+param  ===>  type-specifier 'ID | type-specifier 'ID '[  ']
 can be array, reuse the decl function above.
 */
 TreeNode * param(Boolean *ok)
@@ -409,9 +411,10 @@ TreeNode * compound_stmt(Boolean *ok)
 	if (match_move(LCUR))
 	{
 		node->child[0] = local_dcl_list(ok);
-		node->child[1] = stmt_list(ok);
+		if (status == TRUE)
+			node->child[1] = stmt_list(ok);
 
-		if (match_move(RCUR))
+		if (match_move(RCUR) && status == TRUE)
 		{
 			return parse_good_return(node, ok);
 		}
@@ -466,75 +469,229 @@ TreeNode * local_declaration(Boolean *ok)
 
 }
 
-/* 14 can return NULL */
-TreeNode * stmt_list(Boolean *ok)
+/*
+statement-list  ===>  statement-list statement |empty
+*/
+TreeNode * statement_list(Boolean *ok)
 {
-	TreeNode *t = NULL;
+	TreeNode * t = NULL;
+	TreeNode * l = NULL;
+	TreeNode * r = NULL;
+	Boolean status;
+	while (check(CurrentToken, RCUR))
+	{
+		r = statement(&status);
+		if (l = NULL)
+		{
+			t = l = r;
+		}
+		else if (r != NULL)
+		{
+			l->rSibling = r;
+			r->lSibling = l;
+
+			l = r;
+		}
+		if (status = FALSE)
+		{
+			return parse_bad_return(t, ok);
+		}
+	}
+	parse_good_return(t, ok);
 	return t;
 }
 
-/* 15 */
+/*
+statement  ===>  expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
+*/
 TreeNode * statement(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	Boolean status;
+
+	switch (CurrentToken->token->type)
+	{
+	case LCUR: t = compound_stmt(&status); break;
+	case IF: t = selection_stmt(&status); break;
+	case RETURN: t = return_stmt(&status); break;
+	case SEMI: t = new_stmt_node(NULL_STMT, CurrentToken->lineNum); break;
+	case ID: t = expr_stmt(&status); break;
+	case FOR:case WHILE:case DO: t = iteration_stmt(&status); break;
+	default:
+		break;
+	}
+	if (t != NULL && status == TRUE)
+		return parse_good_return(t, ok);
+	else
+		return parse_bad_return(t, ok);
+}
+/*
+iteration-stmt  ===>  for-stmt | while-stmt | do-while-stmt
+*/
+TreeNode *iteration_stmt(Boolean *ok)
+{
+	TreeNode *t = NULL;
+	Boolean status;
+	switch (CurrentToken->token->type)
+	{
+	case WHILE: t = while_stmt(&status); break;
+	case DO: t = do_while_stmt(&status); break;
+	case FOR: t = for_stmt(&status); break;
+	default:
+		break;
+	}
+	if (t != NULL && status == TRUE)
+		return parse_good_return(t, ok);
+	else
+		return parse_bad_return(t, ok);
 }
 
-/* 16 */
+/*
+ selection-stmt  ===>  if (expression ) statement |if (expression ) statement else statement
+*/
 TreeNode * selection_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	t = new_stmt_node(SLCT_STMT, CurrentToken->lineNum);
+	Boolean status;
+
+	if (match_move(IF))
+	{
+		if (match_move(LPAR))
+		{
+			t->child[0] = expression(&status);
+		}
+		if (match_move(RPAR) && status == TRUE)
+		{
+			t->child[1] = statement(&status);
+		}
+		if (status == TRUE&&check(CurrentToken, ELSE))//else statement
+		{
+			t->child[2] = else_part(&status);
+
+		}
+		else if (status == TRUE)
+		{
+			t->child[2] = NULL;
+			return parse_good_return(t, ok);
+		}
+
+	}
+
+	return parse_bad_return(t, ok);
 }
 
-/* 17 can return NULL */
+/* else ===> else | statement  */
 TreeNode * else_part(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	Boolean status;
+	match_move(ELSE);
+	t = statement(&status);
+	if (status)
+		return parse_good_return(t, ok);
+	else
+		return parse_bad_return(t, ok);
 }
 
-/* 18  */
+/*
+ while-stmt  ===>  while ( expression ) statement
+*/
 TreeNode * while_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
+	t = new_stmt_node(WHILE_STMT, CurrentToken->lineNum);
+	Boolean status;
+	if (match_move(WHILE))
+	{
+		if (match_move(LPAR))
+		{
+			t->child[0] = expression(&status);
+			if (match_move(RPAR) && status)
+			{
+				t->child[1] = statement(&status);
+				if (status)
+					return parse_good_return(t, ok);
+			}
+		}
+	}
+	/* failure */
+	return parse_bad_return(t, ok);
+
 	return t;
 }
 
-/* 19 */
+/*
+do-while-stmt  ===>  'do statement 'while '( expression ') ';
+*/
 TreeNode * do_while_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	t = new_stmt_node(DO_WHILE_STMT, CurrentToken->lineNum);
+	Boolean status;
+
+	if (match_move(DO))
+	{
+		t->child[0] = statement(&status);
+		if (match_move(WHILE) && status)
+			if (match_move(LPAR))
+			{
+				t->child[1] = expression(&status);
+				if (match_move(RPAR) && status)
+					if (match_move(SEMI))
+						return parse_good_return(t, ok);
+			}
+	}
+	return parse_bad_return(t, ok);
 }
 
-/* 20 */
+/*
+for-stmt ===> 'for '( expression '; expression '; expression ') statement
+*/
 TreeNode * for_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	t = new_stmt_node(FOR_STMT, CurrentToken->lineNum);
+	Boolean status;
+	if (match_move(FOR))
+		if (match_move(LPAR))
+		{
+			t->child[0] = expression(&status);
+			if (match_move(SEMI) && status)
+			{
+				t->child[1] = expression(&status);
+				if (match_move(SEMI))
+				{
+					t->child[2] = expression(&status);
+					if (match_move(RPAR))
+					{
+						t->child[3] = statement(&status);
+						return parse_good_return(t, ok);
+					}
+				}
+			}
+		}
+
+	return parse_bad_return(t, ok);
 }
 
-/* 21 Can return NULL */
-TreeNode * expr_or_empty(Boolean *ok)
-{
-	TreeNode *t = NULL;
-	return t;
-}
 
 /* 22 */
 TreeNode * return_stmt(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	return t;
+	t = new_stmt_node(RTN_STMT, CurrentToken->lineNum);
+	Boolean status;
+	if (match_move(RETURN))
+	{
+		t->child[0] = expr_or_empty(&status);
+		if (match_move(SEMI) && status)
+			return parse_good_return(t, ok);
+	}
+
+	return parse_bad_return(t, ok);
 }
 
-/* 23 */
-TreeNode * null_stmt(Boolean *ok)
-{
-	TreeNode *t = NULL;
-	return t;
-}
 
 /* 24 */
 TreeNode * expr_stmt(Boolean *ok)
@@ -593,20 +750,20 @@ TreeNode * relational_expr(Boolean *ok)
 	return t;
 }
 
-/* 
+/*
 relop  ===>  <= | < | > | >= | == | !=
 */
 TreeNode * relop(Boolean *ok)
 {
 	TreeNode *t = NULL;
-	
+
 	if (check(CurrentToken, LT) || check(CurrentToken, LTE)
-					|| check(CurrentToken, GT) || check(CurrentToken, GTE)
-		||check(CurrentToken, EQ) || check(CurrentToken, NEQ)) 
+		|| check(CurrentToken, GT) || check(CurrentToken, GTE)
+		|| check(CurrentToken, EQ) || check(CurrentToken, NEQ))
 	{
 		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
-		t->attr.exprAttr.op  = CurrentToken->token->type;
-		
+		t->attr.exprAttr.op = CurrentToken->token->type;
+
 		return parse_good_return(t, ok);
 	}
 
@@ -620,7 +777,7 @@ TreeNode * additive_expr(Boolean *ok)
 	return t;
 }
 
-/* 
+/*
 addop  ===>  + | -
 */
 TreeNode * addop(Boolean *ok)
@@ -628,8 +785,8 @@ TreeNode * addop(Boolean *ok)
 	TreeNode *t = NULL;
 	if (check(CurrentToken, PLUS) || check(CurrentToken, MINUS)) {
 		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
-		t->attr.exprAttr.op  = CurrentToken->token->type;
-		
+		t->attr.exprAttr.op = CurrentToken->token->type;
+
 		return parse_good_return(t, ok);
 	}
 
@@ -651,8 +808,8 @@ TreeNode * mulop(Boolean *ok)
 	TreeNode *t = NULL;
 	if (check(CurrentToken, MULTP) || check(CurrentToken, OVER)) {
 		t = new_expr_node(OP_EXPR, CurrentToken->lineNum);
-		t->attr.exprAttr.op  = CurrentToken->token->type;
-		
+		t->attr.exprAttr.op = CurrentToken->token->type;
+
 		return parse_good_return(t, ok);
 	}
 
