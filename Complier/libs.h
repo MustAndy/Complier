@@ -1,12 +1,4 @@
-/****************************************************/
-/* File: libs.h                                     */
-/* Global types and vars for C-Minus compiler       */
-/* must come before other include files             */
-/* Compiler Construction: Principles and Practice   */
-/* Book author:  Kenneth C. Louden                  */
-/* Programming by Zhiyao Liang                      */
-/* MUST FIT 2017 Fall                               */
-/****************************************************/
+
 
 #ifndef _LIBS_H_
 #define _LIBS_H_

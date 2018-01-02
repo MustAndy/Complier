@@ -410,9 +410,9 @@ TreeNode * compound_stmt(Boolean *ok)
 
 	if (match_move(LCUR))
 	{
-		node->child[0] = local_dcl_list(ok);
+		node->child[0] = local_dcl_list(&status);
 		if (status == TRUE)
-			node->child[1] = stmt_list(ok);
+			node->child[1] = statement_list(ok);
 
 		if (match_move(RCUR) && status == TRUE)
 		{
@@ -684,7 +684,7 @@ TreeNode * return_stmt(Boolean *ok)
 	Boolean status;
 	if (match_move(RETURN))
 	{
-		t->child[0] = expr_or_empty(&status);
+		t->child[0] = expression(&status);
 		if (match_move(SEMI) && status)
 			return parse_good_return(t, ok);
 	}

@@ -1,11 +1,3 @@
-/***********************************
-
-File: symtab.h
-Symbol table interface for the C-Minus compiler
-cs106 MUST FIT  2017 Fall
-provided by Zhiyao Liang
-************************************/
-
 
 
 #ifndef _SYMBOL_TABLE_H_

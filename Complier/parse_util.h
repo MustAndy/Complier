@@ -1,10 +1,3 @@
-/****************************************************
-File: parse_util.h
-A compiler for the C-Minus language
-
-MUST CS106 2017 Fall
-Programming designed by the teacher: Liang, Zhiyao
-****************************************************/
 
 // This file should only be used by some code implementing the parser, since all it does is for helping parsing.
 

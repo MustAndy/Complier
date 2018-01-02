@@ -1,12 +1,4 @@
-/****************************************************/
-/* File: globals.h                                  */
-/* Global types and vars for C-Minus compiler       */
-/* must come before other include files             */
-/* Compiler Construction: Principles and Practice   */
-/* Book author:  Kenneth C. Louden                  */
-/* Programming by Zhiyao Liang                      */
-/* MUST FIT 2014 Fall                               */
-/****************************************************/
+
 
 
 #ifndef _GLOBALS_H_

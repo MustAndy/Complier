@@ -1,11 +1,3 @@
-/****************************************************
-
-File: analyzer.h
-A compiler for the C-Minus language
-
-MUST CS106 2017 Fall
-Programming designed by the teacher: Liang, Zhiyao
-***************************************************/
 
 /*
 * A general interface of the analyzer is described by analyzer.h. A user of the analyzer does not need to know

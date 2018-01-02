@@ -1,11 +1,4 @@
-/****************************************************
-File: s_analyzer.h
-Semantic analyzer interface for TINY compiler
-Compiler Construction: Principles and Practice
-Kenneth C. Louden
-Programming by Zhiyao Liang
-MUST FIT FALL 2016
-***************************************************/
+
 
 /* implements a semantic analyzer, according to the interface analyzer.h
 */

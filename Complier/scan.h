@@ -1,10 +1,4 @@
-/****************************************************/
-/* File: scan.h                                     */
-/* The scanner interface for the C-Minus compiler   */
-/* Compiler Construction: Principles and Practice   */
-/* Programming by Zhiyao Liang                      */
-/* MUST FIT 2017 Fall                               */
-/****************************************************/
+
 
 #ifndef _SCAN_H_
 #define _SCAN_H_

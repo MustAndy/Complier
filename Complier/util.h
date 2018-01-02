@@ -1,10 +1,4 @@
-/****************************************************/
-/* File: util.h                                     */
-/* The interface of general tools for the           */
-/* C-Minus compiler                                 */
-/* Programming designed by Zhiyao Liang             */
-/* MUST  2017 Fall                                  */
-/****************************************************/
+
 
 #ifndef _UTIL_H_
 #define _UTIL_H_
