@@ -1,4 +1,9 @@
-
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:util.h
+*/
 
 #ifndef _UTIL_H_
 #define _UTIL_H_

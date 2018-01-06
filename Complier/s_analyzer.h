@@ -1,4 +1,9 @@
-
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:s_analyzer.h
+*/
 
 /* implements a semantic analyzer, according to the interface analyzer.h
 */

@@ -1,4 +1,9 @@
-
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:symbol_table.h
+*/
 
 #ifndef _SYMBOL_TABLE_H_
 #define _SYMBOL_TABLE_H_
@@ -128,7 +133,7 @@ Returns the pointer to an initialized empty symbol table, which is newly created
 If the parameter restart is TRUE, then the id of the symbol table is 0, otherwise,
 the id of the symbol table is accumulating (one plus the latest value ).
 */
-SymbolTable * st_initialize(Boolean restart);
+SymbolTable * st_initialize( );
 
 
 /*  st_attach()

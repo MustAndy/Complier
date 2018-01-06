@@ -1,3 +1,9 @@
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:analyzer.h
+*/
 
 /*
 * A general interface of the analyzer is described by analyzer.h. A user of the analyzer does not need to know
@@ -30,10 +36,11 @@ struct analyzer {
 	/* Reset the internal error record, set that status as no error is found*/
 	void(*clear_error_status)(Analyzer * self);
 	void(*set_parse_tree)(Analyzer * self, TreeNode * tree); /*Let the analyzer know the parse-tree, on which the semantic analysis will be carried out */
-	void * info; /* All of the data that the analyzer need to know is included in info
+	TreeNode * info; /* All of the data that the analyzer need to know is included in info
 				 including the parse-tree, the symbol-table, and the flag of whether error is found
 				 by the semantic analyzer */
 };
-
-
+SymbolTable * get_symbol_table(Analyzer * self);
+void build_symbol_table(TreeNode * tree);
+void type_check(TreeNode * tree);
 #endif /* _ANALYZER_H_ */

@@ -1,3 +1,6 @@
-/*error 1 */
-int write; 
-int arr[5];
+int main(void){
+	int aaa[20];
+	int j;
+	aaa[20] = j;
+	return 0;
+}

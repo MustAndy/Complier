@@ -1,3 +1,10 @@
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:scanner.c
+*/
+
 #include"libs.h"
 #include"scan.h"
 #include"globals.h"
@@ -13,47 +20,47 @@ void InsertElem(TOKENNODE *list, int i, char TokenString[], TokenType TokenType,
 
 	TOKENNODE *p, *s;
 	p = list;
-	
+
 	s = (TOKENNODE*)malloc(sizeof(struct TkNd));
-		  if (s == NULL) {
-		  fprintf(listing,"Waring: malloc node error.\n");
-		  return ;
-	  }
-	s->token = (Token*)calloc(1,sizeof(Token));
-	s->token->string = (char*)malloc(sizeof(strlen(TokenString))+1);	
+	if (s == NULL) {
+		fprintf(listing, "Waring: malloc node error.\n");
+		return;
+	}
+	s->token = (Token*)calloc(1, sizeof(Token));
+	s->token->string = (char*)malloc(sizeof(strlen(TokenString)) + 1);
 	strcpy(s->token->string, TokenString);
 	s->token->type = TokenType;
 	s->lineNum = LineNumber;
-	
-	s->next = s->next=NULL;
-	if (head == NULL) {
-		  head = s;
-		  current = s;
-	  }
-	  else {
-		  s->prev = current;
-		  current->next = s;
 
-		  current = s; /* point to tail */
-	  }
-	  list = head;
+	s->next = s->next = NULL;
+	if (head == NULL) {
+		head = s;
+		current = s;
+	}
+	else {
+		s->prev = current;
+		current->next = s;
+
+		current = s; /* point to tail */
+	}
+	list = head;
 }
 
 void print_token_list(TOKENNODE* list)
 {
 	int j = 1;
 
-	while (list!= NULL)
+	while (list != NULL)
 	{
-		fprintf(listing,"j=%-2d", j);
-		fprintf(listing,"   ");
-		fprintf(listing,"%-6s %-3d %-4d \n", list->token->string, list->token->type, list->lineNum);
+		fprintf(listing, "j=%-2d", j);
+		fprintf(listing, "   ");
+		fprintf(listing, "%-6s %-3d %-4d \n", list->token->string, list->token->type, list->lineNum);
 		list = list->next;
 		++j;
 	}
 }
 
-int GetWordsTobuffer(char Buf[300], char buffer[400][20], int m)
+int GetWordsTobuffer(char Buf[300], char buffer[1000][20], int m)
 {
 	while ((fgets(Buf, 256, InputFile)) != NULL)
 	{
@@ -141,7 +148,7 @@ int GetWordsTobuffer(char Buf[300], char buffer[400][20], int m)
 	return m;
 }
 
-void InsertIntoLinkList(char buffer[400][20], int m, TOKENNODE *list)
+void InsertIntoLinkList(char buffer[1000][20], int m, TOKENNODE *list)
 {
 	int TokenCounter = 1;
 	int LineNumber = 1;
@@ -154,7 +161,7 @@ void InsertIntoLinkList(char buffer[400][20], int m, TOKENNODE *list)
 		}
 		else if (buffer[j][0] == 47 && buffer[j][1] == 42)
 		{
-						do
+			do
 			{
 				++j;
 				if (buffer[j][0] == 10)
@@ -202,24 +209,24 @@ void InsertIntoLinkList(char buffer[400][20], int m, TOKENNODE *list)
 			InsertElem(list, TokenCounter, buffer[j], PLUS, LineNumber);
 			TokenCounter++;
 		}
-		else if (buffer[j][0] ==123 )
+		else if (buffer[j][0] == 123)
 		{
-InsertElem(list, TokenCounter, buffer[j], LCUR, LineNumber);
+			InsertElem(list, TokenCounter, buffer[j], LCUR, LineNumber);
 			TokenCounter++;
 		}
-		else if (buffer[j][0] ==125 )
+		else if (buffer[j][0] == 125)
 		{
-InsertElem(list, TokenCounter, buffer[j], RCUR, LineNumber);
+			InsertElem(list, TokenCounter, buffer[j], RCUR, LineNumber);
 			TokenCounter++;
 		}
-		else if (buffer[j][0] ==91 )
+		else if (buffer[j][0] == 91)
 		{
-InsertElem(list, TokenCounter, buffer[j], LBR, LineNumber);
+			InsertElem(list, TokenCounter, buffer[j], LBR, LineNumber);
 			TokenCounter++;
 		}
-				else if (buffer[j][0] ==93 )
+		else if (buffer[j][0] == 93)
 		{
-InsertElem(list, TokenCounter, buffer[j], RBR, LineNumber);
+			InsertElem(list, TokenCounter, buffer[j], RBR, LineNumber);
 			TokenCounter++;
 		}
 		else if (buffer[j][0] == 45)
@@ -335,16 +342,16 @@ InsertElem(list, TokenCounter, buffer[j], RBR, LineNumber);
 	}
 
 	InsertElem(list, TokenCounter, "ENDOFFILE", END, LineNumber);
-				TokenCounter++;
+	TokenCounter++;
 }
 
 TOKENNODE *scanner()
 {
-	fprintf(listing,"scanner start!\n");
-	char buffer[400][20] = { "" };//use for whole page of code
+	fprintf(listing, "scanner start!\n");
+	char buffer[1000][20] = { "" };//use for whole page of code
 	char Buf[300] = { "" };//use for one line 	
 	head = NULL;
-	
+
 	//CreateListTail(&theTokenList);
 	int WordsCounter = 0;
 	WordsCounter = GetWordsTobuffer(Buf, buffer, WordsCounter);
@@ -355,4 +362,14 @@ TOKENNODE *scanner()
 		fprintf(listing,"%s\n", buffer[i]);
 	}*/
 	return head;
-} 
+}
+
+void free_token_list(TOKENNODE *tokenlist)
+{
+	TOKENNODE *p = tokenlist;
+	TOKENNODE *q;
+	for (; tokenlist != NULL; tokenlist = p) {
+		p = tokenlist->next;
+		free(tokenlist);
+	}
+}

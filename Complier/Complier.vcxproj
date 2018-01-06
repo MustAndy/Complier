@@ -19,9 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="analyzer.c" />
+    <ClCompile Include="symbtab.c" />
+    <ClCompile Include="s_analyzer.c" />
     <ClCompile Include="driver.c" />
     <ClCompile Include="parser.c" />
     <ClCompile Include="parse_util.c" />
+    <ClCompile Include="rd_parser.c" />
     <ClCompile Include="scanner.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
@@ -30,6 +34,7 @@
     <ClInclude Include="libs.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="parse_util.h" />
+    <ClInclude Include="rd_parser.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="symbol_table.h" />
     <ClInclude Include="s_analyzer.h" />

@@ -30,6 +30,18 @@
     <ClCompile Include="util.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="rd_parser.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="s_analyzer.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="analyzer.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="symbtab.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="util.h">
@@ -57,6 +69,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rd_parser.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

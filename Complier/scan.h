@@ -1,10 +1,16 @@
-
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:scan.h
+*/
 
 #ifndef _SCAN_H_
 #define _SCAN_H_
 
 /* MAXRESERVED = the number of reserved words/ keywords */
 #include"util.h"
+#include"libs.h"
 #define MAX_RESERVED 8
 
 /* MAXTOKENLEN is the maximum size of a token */
@@ -51,7 +57,10 @@ typedef struct TkNd{
   struct TkNd * next;
 }TOKENNODE;
 
-
+typedef struct {
+	TOKENNODE * head;
+	TOKENNODE * tail;
+}TokenList;
 
 extern TOKENNODE* theTokenList;
 

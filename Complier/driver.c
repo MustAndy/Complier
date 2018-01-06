@@ -1,3 +1,10 @@
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:driver.c
+*/
+
 /****************************************************/
 /* File: driver.c                                   */
 /* Main program for C-Minus compiler                */
@@ -14,7 +21,7 @@
 #include"analyzer.h"
 #include"s_analyzer.h"
 #include"globals.h"
-
+#include"rd_parser.h"
 /* allocate global variables */
 
 
@@ -22,7 +29,7 @@ Boolean G_echoSource = TRUE; /* to print the source code when reading it. */
 Boolean G_traceScanner = TRUE;  /* to print  the token list  obtained by the scanner. */
 Boolean G_traceParser = TRUE;  /* to print  the parse tree  obtained by the parser. */
 Boolean P_debugParser = TRUE;
-Boolean P_keepParseTreeOnError=TRUE;
+Boolean P_keepParseTreeOnError = TRUE;
 Boolean P_parserExitOnError = FALSE;
 /* When TRUE< print the symbol table that it builds */
 Boolean G_traceAnalyzer = TRUE;
@@ -67,10 +74,10 @@ scannerName fileName -d y -t n -p n
 Y or y, N or n, are all fine.
 */
 FILE *OpenTheFile()
-{	
-	fprintf(listing,"press for\n1.arrayMax.cm\n2.complex_expression.cm\n3.do_sum100.cm\n4.fact.cm\n5.good_type.cm\n");
-	fprintf(listing,"6.selection_sort.cm\n7.sum100.cm\n8.wrong_do_sum100.cm\n9.wrong_fact.cm\n10.wrong_fact2.cm\n");
-	fprintf(listing,"11.wrong_fact3.cm\n12.wrong_program.cm\n13.wrong_program2.cm\n14.wrong_selection_sort.cm\n");
+{
+	fprintf(listing, "press for\n1.arrayMax.cm\n2.complex_expression.cm\n3.do_sum100.cm\n4.fact.cm\n5.good_type.cm\n");
+	fprintf(listing, "6.selection_sort.cm\n7.sum100.cm\n8.wrong_do_sum100.cm\n9.wrong_fact.cm\n10.wrong_fact2.cm\n");
+	fprintf(listing, "11.wrong_fact3.cm\n12.wrong_program.cm\n13.wrong_program2.cm\n14.wrong_selection_sort.cm\n");
 	int a;
 	scanf("%d", &a);
 	switch (a)
@@ -108,30 +115,37 @@ FILE *OpenTheFile()
 	}
 	if (InputFile == NULL)
 	{
-		fprintf(listing,"File error!\n");
+		fprintf(listing, "File error!\n");
 		system("pause");
 		exit(0);
 	}
 	else
 	{
-		fprintf(listing,"success\n");
+		fprintf(listing, "success\n");
 		return InputFile;
 	}
 }
 
-int main()
+int main(int argc, char * argv[])
 {
 	listing = stdout; /* send listing to screen */
+	//InputFile = OpenTheFile();
+	RDinfo *parserInfo = NULL;
 
-	InputFile=OpenTheFile();
-	
+	char pgm[120]; /* C- program code file name */
+
+
 	set_default_controls();
-	
+	strcpy(pgm, argv[1]);
+	if (strchr(pgm, '.') == NULL)
+		strcat(pgm, ".cm");  // the C-Minus program has a .cm extension
+	fprintf(stdout, "\nC-Minus COMPILATION: %s\n", pgm);
+	InputFile = fopen(pgm, "r");
 	/* ---------- now run the scanner --------------*/
-	theTokenList = scanner();	
+	theTokenList = scanner();
 	if (G_traceScanner) {
 		fprintf(stdout, "\nThis is the token list obtained by the scanner:\n");
-		print_token_list(theTokenList);
+		//print_token_list(theTokenList);
 		if (S_scannerErrorFound == TRUE) {
 			puts("!!! Scanner found some error.\n");
 			if (G_exitOnError == TRUE) {
@@ -145,10 +159,8 @@ int main()
 	}
 
 	/* ---------- now run the parser --------------*/
-	
-	parseTree = parse();
-	print_tree(parseTree);
-	/*if (parser == NULL)
+
+	if (parser == NULL)
 		parser = new_rd_parser(theTokenList);
 	else
 		parser->set_token_list(parser, theTokenList);
@@ -162,70 +174,71 @@ int main()
 		puts("!!! Error of parsing found, cannot continue compiling the program.");
 		if (G_exitOnError == TRUE) {
 			puts("exit the compiler, due to the error. ");
-			system("pause");
+			exit(2);
 		}
 	}
 	else
 		puts(":) Parser is happy, no error is found.\n");
 
-	if (G_pause == TRUE)
-		pause_msg("Grammar analysis is done. Hit \"Enter\" to continue\n");
-*/
-	
-/* ---------- now run the analyzer --------------*/
-//	if (analyzer == NULL)
-//		analyzer = new_s_analyzer(parseTree);
-//	else
-//		analyzer->set_parse_tree(analyzer, parseTree); /* fixed an error */
-//	puts("Building the symbol table ...");
-//	analyzer->build_symbol_table(analyzer);
-//	symbtab = analyzer->get_symbol_table(analyzer);
-//
-//
-//	if (G_traceAnalyzer == TRUE) {
-//		fprintf(listing,"\nThe Symbol Table:\n");
-//		st_print(symbtab);
-//	}
-//	if (analyzer->check_semantic_error(analyzer) == TRUE) {
-//		fprintf(listing,"\n\n!!!Some error is detected in building the symbol table!!! \n\n"
-//			"It is recommended to fix these errors before other compiling tasks.\n"
-//			"Now the compiler quits.\n");
-//		if (G_pause == TRUE)
-//			pause_msg("Hit Return to continue.\n");
-//		goto END;
-//	}
-//	else {
-//		puts("Good:  no error is found by the semantic analyzer when building the symbol table. ");
-//		if (G_pause == TRUE)
-//			pause_msg("Hit Return to continue.\n");
-//	}
-//	analyzer->clear_error_status(analyzer);
-//
-//	puts("Doing type checking ...");
-//	analyzer->type_check(analyzer);
-//
-//	if (analyzer->check_semantic_error(analyzer) == TRUE) {
-//		fprintf(listing,"\n\n!!!Some error is detected during type checking!!! \n\n"
-//			"It is recommended to fix these errors before other compiling tasks.\n"
-//			"Now the compiler quits.\n");
-//		if (G_pause == TRUE)
-//			pause_msg("Hit Return to continue.\n");
-//		goto END;
-//	}
-//	else {
-//		puts("\nGood:  no error is found by the semantic analyzer when doing type checking.");
-//		if (G_pause == TRUE)
-//			pause_msg("Hit Return to continue.\n");
-//	}
-//
-//END: /* Done with compiling a program */
-//	st_free(symbtab);
-//	symbtab = NULL;
-//	analyzer->clear(analyzer);
-//	parser->free_tree(parser, parseTree);
-//	parseTree = NULL;
-//	free_token_list(&theTokenList);
-//	theTokenList.head = theTokenList.tail = NULL;
+	/*if (G_pause == TRUE)
+		pause_msg("Grammar analysis is done. Hit \"Enter\" to continue\n");*/
+
+
+		/* ---------- now run the analyzer --------------*/
+	if (analyzer == NULL)
+		analyzer = new_s_analyzer(parseTree);
+	else
+		analyzer->set_parse_tree(analyzer, parseTree); /* fixed an error */
+	puts("Building the symbol table ...");
+	analyzer->build_symbol_table(analyzer);
+	symbtab = analyzer->get_symbol_table(analyzer);
+
+	if (G_traceAnalyzer == TRUE) {
+		fprintf(listing, "\nThe Symbol Table:\n");
+		st_print(symbtab);
+	}
+	if (analyzer->check_semantic_error(analyzer) == TRUE) {
+		fprintf(listing, "\n\n!!!Some error is detected in building the symbol table!!! \n\n"
+			"It is recommended to fix these errors before other compiling tasks.\n"
+			"Now the compiler quits.\n");
+		//if (G_pause == TRUE)
+			//pause_msg("Hit Return to continue.\n");
+		goto END;
+	}
+	else {
+		puts("Good:  no error is found by the semantic analyzer when building the symbol table. ");
+		//if (G_pause == TRUE)
+			//pause_msg("Hit Return to continue.\n");
+	}
+	//	analyzer->clear_error_status(analyzer);
+
+	puts("Doing type checking ...");
+	analyzer->type_check(analyzer);
+
+	if (analyzer->check_semantic_error(analyzer) == TRUE) {
+		fprintf(listing, "\n\n!!!Some error is detected during type checking!!! \n\n"
+			"It is recommended to fix these errors before other compiling tasks.\n"
+			"Now the compiler quits.\n");
+		//if (G_pause == TRUE)
+			//pause_msg("Hit Return to continue.\n");
+		goto END;
+	}
+	else {
+		puts("\nGood:  no error is found by the semantic analyzer when doing type checking.");
+		//if (G_pause == TRUE)
+		//	pause_msg("Hit Return to continue.\n");
+	}
+
+	//END: /* Done with compiling a program */
+		//st_free(symbtab);
+		//symbtab = NULL;
+		//analyzer->clear(analyzer);
+		//parser->free_tree(parser, parseTree);
+END:
+	free_tree(parseTree);
+	parseTree = NULL;
+	free_token_list(theTokenList);
+	//theTokenList.head = theTokenList.tail = NULL;
 
 	//puts("Bye.");
 	fclose(InputFile);

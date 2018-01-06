@@ -1,3 +1,9 @@
+/*
+*   Name: Wang,jingqing
+*   ID: 1509853G-I011-0202
+*   CLASS: 1709-CS106
+*   File:parse_util.h
+*/
 
 // This file should only be used by some code implementing the parser, since all it does is for helping parsing.
 
@@ -91,7 +97,7 @@ Boolean check(const TOKENNODE * nd, TokenType tp);
 * */
 Boolean check_one_of(const TOKENNODE * nd, TokenType types[], int typesLen);
 
-
+void print_tree(TreeNode * tree);
 
 /* find_closing_mark()
 Giving a starting mark of [, (, or {, find the token node of the paring closing mark of ], ) or }
@@ -110,10 +116,10 @@ void connect_parent(TreeNode * parent, TreeNode * nd);
 All the sub-trees should be freed recursively.
 */
 void free_tree(TreeNode * nd);
-
+void print_token_type(TokenType tokenTp);
 extern TOKENNODE* CurrentToken;
 extern TokenType CurrentTokenType;
-
+void getToken();
 /* The function called if some bad thing happened (error) in the parsing.
 top: the top node of a tree after some parsing task.
 ok: a boolean variable. Some code in the parser use it to see if a task of parsing succeeded or not.
